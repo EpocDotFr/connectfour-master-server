@@ -4,6 +4,8 @@ from sqlalchemy_utils import ArrowType
 from flask_restful import Api, Resource, abort as abort_restful, marshal_with, fields, reqparse
 from werkzeug.exceptions import HTTPException
 from enum import Enum
+from geolite2 import geolite2
+from iso3166 import countries
 import logging
 import sys
 import arrow
@@ -77,7 +79,18 @@ class GamesResource(Resource):
         game = Game()
         game.guid = args['guid']
         game.name = args['name']
-        game.ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        game.ip = '109.14.74.110' # request.headers.get('X-Forwarded-For', request.remote_addr)
+
+        if game.ip:
+            geolite2_reader = geolite2.reader()
+            location = geolite2_reader.get(game.ip)
+            geolite2_reader.close()
+
+            if location:
+                country = countries.get(location['country']['names']['en'])
+
+                if country:
+                    game.location = country.name
 
         try:
             db.session.add(game)

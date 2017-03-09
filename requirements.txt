@@ -4,3 +4,5 @@ Flask-RESTful
 arrow
 SQLAlchemy
 sqlalchemy-utils
+maxminddb-geolite2
+iso3166

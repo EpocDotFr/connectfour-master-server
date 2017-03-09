@@ -16,7 +16,7 @@
             <tr>
                 <td>{{ game.name }}</td>
                 <td>{{ game.ip }}</td>
-                <td>{{ game.location }}</td>
+                <td>{% if game.location %}{{ game.location }}{% else %}?{% endif %}</td>
                 <td>{{ game.status_text }}</td>
             </tr>
             {% endfor %}
