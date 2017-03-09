@@ -1,5 +1,6 @@
 from flask import Flask, render_template, make_response
 from flask_sqlalchemy import SQLAlchemy
+from flask_restful import Api, Resource, abort as abort_restful
 from werkzeug.exceptions import HTTPException
 import logging
 import sys
@@ -19,6 +20,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.jinja_env.globals.update(arrow=arrow)
 
 db = SQLAlchemy(app)
+api = Api(app)
 
 # Default Python logger
 logging.basicConfig(
@@ -41,6 +43,34 @@ for handler in app.logger.handlers:
 @app.route('/')
 def home():
     return render_template('home.html')
+
+
+# -----------------------------------------------------------
+# API resources
+
+
+class Games(Resource):
+    def get(self):
+        return {}
+
+    def post(self):
+        return {}, 201
+
+
+class Game(Resource):
+    def get(self, guid):
+        abort_restful(404, message='This game does not exists.')
+        return {}
+
+    def put(self, guid):
+        return {}
+
+    def delete(self, guid):
+        return {}
+
+
+api.add_resource(Games, '/games')
+api.add_resource(Game, '/games/<guid>')
 
 
 # -----------------------------------------------------------
