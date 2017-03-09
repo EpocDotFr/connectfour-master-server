@@ -1,7 +1,7 @@
 from flask import Flask, render_template, make_response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import ArrowType
-from flask_restful import Api, Resource, abort as abort_restful
+from flask_restful import Api, Resource, abort as abort_restful, marshal_with, fields
 from werkzeug.exceptions import HTTPException
 from enum import Enum
 import logging
@@ -44,35 +44,61 @@ for handler in app.logger.handlers:
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('home.html', games=Game.query.get_all())
 
 
 # -----------------------------------------------------------
 # API resources
 
 
-class Games(Resource):
+game_fields = {
+    'guid': fields.String,
+    'name': fields.String,
+    'ip': fields.String,
+    'port': fields.Integer,
+    'location': fields.String
+}
+
+
+class GamesResource(Resource):
+    @marshal_with(game_fields)
     def get(self):
-        return {}
+        return Game.query.get_all_waiting()
 
     def post(self):
         return {}, 201
 
 
-class Game(Resource):
+class GameResource(Resource):
+    @marshal_with(game_fields)
     def get(self, guid):
-        abort_restful(404, message='This game does not exists.')
-        return {}
+        game = Game.query.get(guid)
+
+        if not game:
+            abort_restful(404, message='This game does not exists.')
+
+        return game
 
     def put(self, guid):
         return {}
 
     def delete(self, guid):
-        return {}
+        game = Game.query.get(guid)
+
+        if not game:
+            abort_restful(404, message='This game does not exists.')
+
+        try:
+            db.session.delete(game)
+            db.session.commit()
+
+            return None, 204
+        except Exception as e:
+            abort_restful(500, message='Error deleting this game: {}'.format(e))
 
 
-api.add_resource(Games, '/games')
-api.add_resource(Game, '/games/<guid>')
+api.add_resource(GamesResource, '/games')
+api.add_resource(GameResource, '/games/<guid>')
 
 
 # -----------------------------------------------------------
@@ -86,7 +112,16 @@ class GameStatus(Enum):
 
 class Game(db.Model):
     class GameQuery(db.Query):
-        pass
+        def get_all_waiting(self):
+            q = self.order_by(Game.name.asc())
+            q = q.filter(Game.status == GameStatus.WAITING)
+
+            return q.all()
+
+        def get_all(self):
+            q = self.order_by(Game.name.asc())
+
+            return q.all()
 
     __tablename__ = 'games'
     query_class = GameQuery
