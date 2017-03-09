@@ -64,10 +64,6 @@ a:focus {
 /************************************************************************
  * Header */
 
-header {
-    border-bottom: 0.1rem solid #ccc;
-}
-
 header a {
     text-decoration: none;
     color: inherit;
@@ -88,22 +84,14 @@ header a:hover {
 table,
 table td,
 table th {
-    border: 0.2rem solid #E6B71D;
+    border: 0.1rem solid #ccc;
     table-layout: auto;
 }
 
 table th {
-    background-color: #000545;
-    color: #FFF;
+    background-color: #e0e0e0;
 }
 
 table tr:nth-child(even) td {
     background-color: #F5F6FF;
-}
-
-/************************************************************************
- * Footer */
-
-footer {
-    border-top: 0.1rem solid #ccc;
 }

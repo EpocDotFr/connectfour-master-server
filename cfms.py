@@ -79,7 +79,7 @@ class GamesResource(Resource):
         game = Game()
         game.guid = args['guid']
         game.name = args['name']
-        game.ip = '109.14.74.110' # request.headers.get('X-Forwarded-For', request.remote_addr)
+        game.ip = request.headers.get('X-Forwarded-For', request.remote_addr)
 
         if game.ip:
             geolite2_reader = geolite2.reader()
