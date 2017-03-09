@@ -1,7 +1,7 @@
-from flask import Flask, render_template, make_response
+from flask import Flask, render_template, make_response, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import ArrowType
-from flask_restful import Api, Resource, abort as abort_restful, marshal_with, fields
+from flask_restful import Api, Resource, abort as abort_restful, marshal_with, fields, reqparse
 from werkzeug.exceptions import HTTPException
 from enum import Enum
 import logging
@@ -18,11 +18,12 @@ app.config.from_pyfile('config.py')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///storage/data/db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['BUNDLE_ERRORS'] = True
 
 app.jinja_env.globals.update(arrow=arrow)
 
 db = SQLAlchemy(app)
-api = Api(app)
+api = Api(app, catch_all_404s=True)
 
 # Default Python logger
 logging.basicConfig(
@@ -42,6 +43,11 @@ for handler in app.logger.handlers:
 # Routes
 
 
+game_parser = reqparse.RequestParser()
+game_parser.add_argument('guid', required=True, location='json')
+game_parser.add_argument('name', required=True, location='json')
+
+
 @app.route('/')
 def home():
     return render_template('home.html', games=Game.query.get_all())
@@ -55,7 +61,6 @@ game_fields = {
     'guid': fields.String,
     'name': fields.String,
     'ip': fields.String,
-    'port': fields.Integer,
     'location': fields.String
 }
 
@@ -66,7 +71,20 @@ class GamesResource(Resource):
         return Game.query.get_all_waiting()
 
     def post(self):
-        return {}, 201
+        args = game_parser.parse_args()
+
+        game = Game()
+        game.guid = args['guid']
+        game.name = args['name']
+        game.ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+
+        try:
+            db.session.add(game)
+            db.session.commit()
+
+            return game, 201
+        except Exception as e:
+            abort_restful(500, message='Error creating this game: {}'.format(e))
 
 
 class GameResource(Resource):
@@ -130,16 +148,14 @@ class Game(db.Model):
 
     name = db.Column(db.String(255), nullable=False)
     ip = db.Column(db.String(45), nullable=False)
-    port = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Enum(GameStatus), default=GameStatus.WAITING)
     location = db.Column(db.String(255), default=None)
     created_at = db.Column(ArrowType, default=arrow.now())
 
-    def __init__(self, guid=None, name=None, ip=None, port=None, status=GameStatus.WAITING, location=None, created_at=arrow.now()):
+    def __init__(self, guid=None, name=None, ip=None, status=GameStatus.WAITING, location=None, created_at=arrow.now()):
         self.guid = guid
         self.name = name
         self.ip = ip
-        self.port = port
         self.status = status
         self.location = location
         self.created_at = created_at
