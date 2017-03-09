@@ -70,6 +70,7 @@ class GamesResource(Resource):
     def get(self):
         return Game.query.get_all_waiting()
 
+    @marshal_with(game_fields)
     def post(self):
         args = game_parser.parse_args()
 
