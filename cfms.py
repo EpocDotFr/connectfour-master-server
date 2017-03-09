@@ -1,7 +1,9 @@
 from flask import Flask, render_template, make_response
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy_utils import ArrowType
 from flask_restful import Api, Resource, abort as abort_restful
 from werkzeug.exceptions import HTTPException
+from enum import Enum
 import logging
 import sys
 import arrow
@@ -77,7 +79,38 @@ api.add_resource(Game, '/games/<guid>')
 # Models
 
 
-# TODO
+class GameStatus(Enum):
+    WAITING = 'WAITING'
+    PLAYING = 'PLAYING'
+
+
+class Game(db.Model):
+    class GameQuery(db.Query):
+        pass
+
+    __tablename__ = 'games'
+    query_class = GameQuery
+
+    guid = db.Column(db.String(32), primary_key=True, unique=True)
+
+    name = db.Column(db.String(255), nullable=False)
+    ip = db.Column(db.String(45), nullable=False)
+    port = db.Column(db.Integer, nullable=False)
+    status = db.Column(db.Enum(GameStatus), default=GameStatus.WAITING)
+    location = db.Column(db.String(255), default=None)
+    created_at = db.Column(ArrowType, default=arrow.now())
+
+    def __init__(self, guid=None, name=None, ip=None, port=None, status=GameStatus.WAITING, location=None, created_at=arrow.now()):
+        self.guid = guid
+        self.name = name
+        self.ip = ip
+        self.port = port
+        self.status = status
+        self.location = location
+        self.created_at = created_at
+
+    def __repr__(self):
+        return '<Game> #{} : {}'.format(self.guid, self.name)
 
 
 # -----------------------------------------------------------
