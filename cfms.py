@@ -149,20 +149,25 @@ class Game(db.Model):
 
     name = db.Column(db.String(255), nullable=False)
     ip = db.Column(db.String(45), nullable=False)
-    status = db.Column(db.Enum(GameStatus), default=GameStatus.WAITING)
     location = db.Column(db.String(255), default=None)
+    status = db.Column(db.Enum(GameStatus), default=GameStatus.WAITING)
     created_at = db.Column(ArrowType, default=arrow.now())
 
     def __init__(self, guid=None, name=None, ip=None, status=GameStatus.WAITING, location=None, created_at=arrow.now()):
         self.guid = guid
         self.name = name
         self.ip = ip
-        self.status = status
         self.location = location
+        self.status = status
         self.created_at = created_at
 
     def __repr__(self):
         return '<Game> #{} : {}'.format(self.guid, self.name)
+
+    @property
+    def status_text(self):
+        if self.status == GameStatus.WAITING:
+            return 'Waiting'
 
 
 # -----------------------------------------------------------
