@@ -7,20 +7,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex,nofollow,noarchive"/>
 
-    <title>Connect Four Master Server</title>
+    <title>{% block meta_title %}{% endblock %}{% if self.meta_title() | trim %} • {% endif %}Connect Four Games</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/knacss.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" />
 </head>
-<body>
-    <header>
-        <h1>Connect Four Master Server</h1>
+<body class="man pas">
+    <header class="pls prs pbs">
+        <a href="{{ url_for('home') }}" class="biggest"><img src="{{ url_for('static', filename='images/logo.png') }}"> Connect Four Games</a>
     </header>
 
-    <hr>
+    <div class="pas center">
+        {% with flash_messages = get_flashed_messages(with_categories=true) %}
+          {% if flash_messages %}
+            {% for category, message in flash_messages %}
+              <p class="alert {{ category }} pas">{{ message }}</p>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
 
-    {% block content %} {% endblock %}
+        {% block content %} {% endblock %}
+    </div>
 
-    <hr>
-
-    <footer>
+    <footer class="txtmuted txtcenter small pas">
         © 2017 <a href="https://epoc.fr">Maxime "Epoc" G.</a> • <a href="https://github.com/EpocDotFr/connectfour-master-server">Source code on GitHub</a> • Licensed under the <a href="https://github.com/EpocDotFr/connectfour-master-server/blob/master/LICENSE.md">DBAD</a>
     </footer>
 </body>
