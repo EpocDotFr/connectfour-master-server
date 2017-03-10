@@ -63,7 +63,7 @@ game_fields = {
     'id': fields.Integer,
     'name': fields.String,
     'ip': fields.String,
-    'location': fields.String,
+    'country': fields.String,
     'version': fields.String
 }
 
@@ -82,16 +82,15 @@ class GamesResource(Resource):
         game.ip = request.headers.get('X-Forwarded-For', request.remote_addr)
         game.version = args['version']
 
-        if game.ip:
-            geolite2_reader = geolite2.reader()
-            location = geolite2_reader.get(game.ip)
-            geolite2_reader.close()
+        geolite2_reader = geolite2.reader()
+        location = geolite2_reader.get(game.ip)
+        geolite2_reader.close()
 
-            if location:
-                country = countries.get(location['country']['names']['en'])
+        if location:
+            country = countries.get(location['country']['names']['en'])
 
-                if country:
-                    game.location = country.name
+            if country:
+                game.country = country.name
 
         try:
             db.session.add(game)
@@ -164,18 +163,18 @@ class Game(db.Model):
 
     name = db.Column(db.String(255), nullable=False)
     ip = db.Column(db.String(45), nullable=False, unique=True)
-    location = db.Column(db.String(255), default=None)
+    country = db.Column(db.String(255), default=None)
     version = db.Column(db.String(10), nullable=False)
     status = db.Column(db.Enum(GameStatus), default=GameStatus.WAITING)
     created_at = db.Column(ArrowType, default=arrow.now())
     started_at = db.Column(ArrowType, default=None)
     finished_at = db.Column(ArrowType, default=None)
 
-    def __init__(self, id=None, name=None, ip=None, location=None, version=None, status=GameStatus.WAITING, created_at=arrow.now(), started_at=None, finished_at=None):
+    def __init__(self, id=None, name=None, ip=None, country=None, version=None, status=GameStatus.WAITING, created_at=arrow.now(), started_at=None, finished_at=None):
         self.id = id
         self.name = name
         self.ip = ip
-        self.location = location
+        self.country = country
         self.version = version
         self.status = status
         self.created_at = created_at
@@ -193,6 +192,10 @@ class Game(db.Model):
             return 'Playing'
         elif self.status == GameStatus.FINISHED:
             return 'Finished'
+
+    @property
+    def country_name(self):
+        return None
 
 
 # -----------------------------------------------------------
