@@ -18,8 +18,19 @@
                 <tr>
                     <td>{{ game.name }}<br><small class="txtmuted">v{{ game.version }}</small></td>
                     <td>{{ game.ip }}<br><small class="txtmuted">{% if game.country %}{{ game.country_name }}{% else %}Unknown location{% endif %}</small></td>
-                    <td class="{% if game.status.value in ('FINISHED', 'PLAYING') %}txtred{% elif game.status.value == 'WAITING' %}txtgreen{% endif %}">{{ game.status_text }}{% if game.status.value != 'WAITING' %}<br><small>{% if game.status.value == 'PLAYING' %}Started {{ game.started_at.humanize() }}{% elif game.status.value == 'FINISHED' %}{{ game.finished_at.datetime|datetimeformat('short') }}{% endif %}</small>{% endif %}</td>
-                    <td>{{ game.created_at.humanize().capitalize() }}<br><small class="txtmuted">{{ game.created_at.datetime|datetimeformat('short') }}</small></td>
+                    <td>
+                        <span class="{% if game.status.value in ('FINISHED', 'PLAYING') %}txtred{% elif game.status.value == 'WAITING' %}txtgreen{% endif %}">{{ game.status_text }}</span><br>
+                        <small class="txtmuted">
+                            {% if game.status.value != 'WAITING' %}
+                                {% if game.status.value == 'PLAYING' %}
+                                    {{ game.started_at.datetime|datetimeformat('short') }} ({{ game.started_at.humanize() }})
+                                {% elif game.status.value == 'FINISHED' %}
+                                    {{ game.finished_at.datetime|datetimeformat('short') }} ({{ game.finished_at.humanize() }})
+                                {% endif %}
+                            {% endif %}
+                        </small>
+                    </td>
+                    <td>{{ game.created_at.datetime|datetimeformat('short') }}<br><small class="txtmuted">{{ game.created_at.humanize().capitalize() }}</small></td>
                 </tr>
                 {% endfor %}
             </tbody>
