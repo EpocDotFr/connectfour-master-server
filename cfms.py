@@ -70,7 +70,7 @@ game_fields = {
 class GamesResource(Resource):
     @marshal_with(game_fields)
     def get(self):
-        return Game.query.get_all_waiting()
+        return Game.query.get_all_by_status(GameStatus.WAITING)
 
     @marshal_with(game_fields)
     def post(self):
@@ -140,13 +140,14 @@ api.add_resource(GameResource, '/games/<guid>')
 class GameStatus(Enum):
     WAITING = 'WAITING'
     PLAYING = 'PLAYING'
+    FINISHED = 'FINISHED'
 
 
 class Game(db.Model):
     class GameQuery(db.Query):
-        def get_all_waiting(self):
+        def get_all_by_status(self, status):
             q = self.order_by(Game.name.asc())
-            q = q.filter(Game.status == GameStatus.WAITING)
+            q = q.filter(Game.status == status)
 
             return q.all()
 
@@ -161,18 +162,22 @@ class Game(db.Model):
     guid = db.Column(db.String(32), primary_key=True, unique=True)
 
     name = db.Column(db.String(255), nullable=False)
-    ip = db.Column(db.String(45), nullable=False)
+    ip = db.Column(db.String(45), nullable=False, unique=True)
     location = db.Column(db.String(255), default=None)
     status = db.Column(db.Enum(GameStatus), default=GameStatus.WAITING)
     created_at = db.Column(ArrowType, default=arrow.now())
+    started_at = db.Column(ArrowType, default=None)
+    finished_at = db.Column(ArrowType, default=None)
 
-    def __init__(self, guid=None, name=None, ip=None, status=GameStatus.WAITING, location=None, created_at=arrow.now()):
+    def __init__(self, guid=None, name=None, ip=None, location=None, status=GameStatus.WAITING, created_at=arrow.now(), started_at=None, finished_at=None):
         self.guid = guid
         self.name = name
         self.ip = ip
         self.location = location
         self.status = status
         self.created_at = created_at
+        self.started_at = started_at
+        self.finished_at = finished_at
 
     def __repr__(self):
         return '<Game> #{} : {}'.format(self.guid, self.name)
@@ -181,6 +186,10 @@ class Game(db.Model):
     def status_text(self):
         if self.status == GameStatus.WAITING:
             return 'Waiting'
+        elif self.status == GameStatus.PLAYING:
+            return 'Playing'
+        elif self.status == GameStatus.FINISHED:
+            return 'Finished'
 
 
 # -----------------------------------------------------------

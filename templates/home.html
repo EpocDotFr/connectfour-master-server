@@ -1,27 +1,29 @@
 {% extends 'layout.html' %}
 
 {% block content %}
+    <p class="txtcenter">This page lists all the <a href="https://github.com/EpocDotFr/connectfour">Connect Four</a> online games.</p>
+
     {% if games %}
-    <table class="wauto center mbn">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>IP</th>
-                <th>Location</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for game in games %}
-            <tr>
-                <td>{{ game.name }}</td>
-                <td>{{ game.ip }}</td>
-                <td>{% if game.location %}{{ game.location }}{% else %}?{% endif %}</td>
-                <td>{{ game.status_text }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <table class="wauto center mbn">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>IP</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in games %}
+                <tr>
+                    <td>{{ game.name }}</td>
+                    <td>{{ game.ip }}</td>
+                    <td>{% if game.location %}{{ game.location }}{% else %}?{% endif %}</td>
+                    <td>{{ game.status_text }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% else %}
         <p class="alert info pas">No games to display at this moment.</p>
     {% endif %}
