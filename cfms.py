@@ -45,9 +45,12 @@ for handler in app.logger.handlers:
 # Routes
 
 
-game_parser = reqparse.RequestParser()
-game_parser.add_argument('name', required=True, location='json')
-game_parser.add_argument('version', required=True, location='json')
+get_games_parser = reqparse.RequestParser()
+get_games_parser.add_argument('version', location='args')
+
+post_games_parser = reqparse.RequestParser()
+post_games_parser.add_argument('name', required=True, location='json')
+post_games_parser.add_argument('version', required=True, location='json')
 
 
 @app.route('/')
@@ -63,19 +66,21 @@ game_fields = {
     'id': fields.Integer,
     'name': fields.String,
     'ip': fields.String,
-    'country': fields.String,
-    'version': fields.String
+    'country_name': fields.String,
+    'created_at': fields.String
 }
 
 
 class GamesResource(Resource):
     @marshal_with(game_fields)
     def get(self):
-        return Game.query.get_all_by_status(GameStatus.WAITING)
+        args = get_games_parser.parse_args()
+
+        return Game.query.get_all_for_api(version=args['version'])
 
     @marshal_with(game_fields)
     def post(self):
-        args = game_parser.parse_args()
+        args = post_games_parser.parse_args()
 
         game = Game()
         game.name = args['name']
@@ -87,10 +92,7 @@ class GamesResource(Resource):
         geolite2_reader.close()
 
         if location:
-            country = countries.get(location['country']['names']['en'])
-
-            if country:
-                game.country = country.name
+            game.country = location['country']['names']['en'] # FIXME
 
         try:
             db.session.add(game)
@@ -145,9 +147,9 @@ class GameStatus(Enum):
 
 class Game(db.Model):
     class GameQuery(db.Query):
-        def get_all_by_status(self, status):
+        def get_all_for_api(self, version):
             q = self.order_by(Game.name.asc())
-            q = q.filter(Game.status == status)
+            q = q.filter(Game.status == GameStatus.WAITING and Game.version == version)
 
             return q.all()
 
@@ -170,8 +172,7 @@ class Game(db.Model):
     started_at = db.Column(ArrowType, default=None)
     finished_at = db.Column(ArrowType, default=None)
 
-    def __init__(self, id=None, name=None, ip=None, country=None, version=None, status=GameStatus.WAITING, created_at=arrow.now(), started_at=None, finished_at=None):
-        self.id = id
+    def __init__(self, name=None, ip=None, country=None, version=None, status=GameStatus.WAITING, created_at=arrow.now(), started_at=None, finished_at=None):
         self.name = name
         self.ip = ip
         self.country = country
@@ -195,7 +196,12 @@ class Game(db.Model):
 
     @property
     def country_name(self):
-        return None
+        country = countries.get(self.country)
+
+        if country:
+            return country.name
+        else:
+            return 'Unknow'
 
 
 # -----------------------------------------------------------
