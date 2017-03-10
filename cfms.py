@@ -6,7 +6,8 @@ from werkzeug.exceptions import HTTPException
 from enum import Enum
 from geolite2 import geolite2
 from iso3166 import countries
-from flask_babel import Babel, format_datetime
+from flask_babel import Babel
+import uuid
 import logging
 import sys
 import arrow
@@ -65,7 +66,7 @@ def home():
 
 
 game_fields = {
-    'id': fields.Integer,
+    'id': fields.String,
     'name': fields.String,
     'ip': fields.String,
     'country_name': fields.String,
@@ -85,6 +86,7 @@ class GamesResource(Resource):
         args = post_games_parser.parse_args()
 
         game = Game()
+        game.id = uuid.uuid4().hex
         game.name = args['name']
         game.ip = request.headers.get('X-Forwarded-For', request.remote_addr)
         game.version = args['version']
@@ -106,8 +108,7 @@ class GamesResource(Resource):
 
 
 class GameResource(Resource):
-    @marshal_with(game_fields)
-    def get(self, id):
+    def _get_game(self, id):
         game = Game.query.get(id)
 
         if not game:
@@ -115,14 +116,44 @@ class GameResource(Resource):
 
         return game
 
+    @marshal_with(game_fields)
+    def get(self, id):
+        return self._get_game(id)
+
+    @marshal_with(game_fields)
     def put(self, id):
-        return {}
+        game = self._get_game(id)
+
+        args = post_games_parser.parse_args()
+
+        if 'name' in args:
+            game.name = args['name']
+
+        if 'version' in args:
+            game.version = args['version']
+
+        ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+
+        if ip != game.ip:
+            game.ip = ip
+
+            geolite2_reader = geolite2.reader()
+            location = geolite2_reader.get(game.ip)
+            geolite2_reader.close()
+
+            if location:
+                game.country = location['country']['iso_code']
+
+        try:
+            db.session.add(game)
+            db.session.commit()
+
+            return game, 200
+        except Exception as e:
+            abort_restful(500, message='Error updating this game: {}'.format(e))
 
     def delete(self, id):
-        game = Game.query.get(id)
-
-        if not game:
-            abort_restful(404, message='This game does not exists.')
+        game = self._get_game(id)
 
         try:
             db.session.delete(game)
@@ -163,7 +194,7 @@ class Game(db.Model):
     __tablename__ = 'games'
     query_class = GameQuery
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.String(32), primary_key=True)
 
     name = db.Column(db.String(255), nullable=False)
     ip = db.Column(db.String(45), nullable=False, unique=True)
@@ -198,12 +229,15 @@ class Game(db.Model):
 
     @property
     def country_name(self):
+        if not self.country:
+            return None
+
         country = countries.get(self.country)
 
         if country:
             return country.name
         else:
-            return 'Unknow'
+            return None
 
 
 # -----------------------------------------------------------
