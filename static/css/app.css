@@ -13,6 +13,14 @@ textarea {
     color: #AAA;
 }
 
+.txtgreen {
+    color: #6ead4f;
+}
+
+.txtred {
+    color: #dd3b3b;
+}
+
 .page {
     max-width: 1024px;
 }

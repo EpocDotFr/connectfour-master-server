@@ -6,6 +6,7 @@ from werkzeug.exceptions import HTTPException
 from enum import Enum
 from geolite2 import geolite2
 from iso3166 import countries
+from flask_babel import Babel, format_datetime
 import logging
 import sys
 import arrow
@@ -26,6 +27,7 @@ app.jinja_env.globals.update(arrow=arrow)
 
 db = SQLAlchemy(app)
 api = Api(app, catch_all_404s=True)
+Babel(app)
 
 # Default Python logger
 logging.basicConfig(
