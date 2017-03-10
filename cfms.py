@@ -46,8 +46,8 @@ for handler in app.logger.handlers:
 
 
 game_parser = reqparse.RequestParser()
-game_parser.add_argument('guid', required=True, location='json')
 game_parser.add_argument('name', required=True, location='json')
+game_parser.add_argument('version', required=True, location='json')
 
 
 @app.route('/')
@@ -60,10 +60,11 @@ def home():
 
 
 game_fields = {
-    'guid': fields.String,
+    'id': fields.Integer,
     'name': fields.String,
     'ip': fields.String,
-    'location': fields.String
+    'location': fields.String,
+    'version': fields.String
 }
 
 
@@ -77,9 +78,9 @@ class GamesResource(Resource):
         args = game_parser.parse_args()
 
         game = Game()
-        game.guid = args['guid']
         game.name = args['name']
         game.ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        game.version = args['version']
 
         if game.ip:
             geolite2_reader = geolite2.reader()
@@ -103,19 +104,19 @@ class GamesResource(Resource):
 
 class GameResource(Resource):
     @marshal_with(game_fields)
-    def get(self, guid):
-        game = Game.query.get(guid)
+    def get(self, id):
+        game = Game.query.get(id)
 
         if not game:
             abort_restful(404, message='This game does not exists.')
 
         return game
 
-    def put(self, guid):
+    def put(self, id):
         return {}
 
-    def delete(self, guid):
-        game = Game.query.get(guid)
+    def delete(self, id):
+        game = Game.query.get(id)
 
         if not game:
             abort_restful(404, message='This game does not exists.')
@@ -130,7 +131,7 @@ class GameResource(Resource):
 
 
 api.add_resource(GamesResource, '/games')
-api.add_resource(GameResource, '/games/<guid>')
+api.add_resource(GameResource, '/games/<id>')
 
 
 # -----------------------------------------------------------
@@ -159,28 +160,30 @@ class Game(db.Model):
     __tablename__ = 'games'
     query_class = GameQuery
 
-    guid = db.Column(db.String(32), primary_key=True, unique=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
     name = db.Column(db.String(255), nullable=False)
     ip = db.Column(db.String(45), nullable=False, unique=True)
     location = db.Column(db.String(255), default=None)
+    version = db.Column(db.String(10), nullable=False)
     status = db.Column(db.Enum(GameStatus), default=GameStatus.WAITING)
     created_at = db.Column(ArrowType, default=arrow.now())
     started_at = db.Column(ArrowType, default=None)
     finished_at = db.Column(ArrowType, default=None)
 
-    def __init__(self, guid=None, name=None, ip=None, location=None, status=GameStatus.WAITING, created_at=arrow.now(), started_at=None, finished_at=None):
-        self.guid = guid
+    def __init__(self, id=None, name=None, ip=None, location=None, version=None, status=GameStatus.WAITING, created_at=arrow.now(), started_at=None, finished_at=None):
+        self.id = id
         self.name = name
         self.ip = ip
         self.location = location
+        self.version = version
         self.status = status
         self.created_at = created_at
         self.started_at = started_at
         self.finished_at = finished_at
 
     def __repr__(self):
-        return '<Game> #{} : {}'.format(self.guid, self.name)
+        return '<Game> #{} : {}'.format(self.id, self.name)
 
     @property
     def status_text(self):
