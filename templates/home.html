@@ -9,17 +9,17 @@
                 <tr>
                     <th>Name</th>
                     <th>IP</th>
-                    <th>Location</th>
                     <th>Status</th>
+                    <th>Created</th>
                 </tr>
             </thead>
             <tbody>
                 {% for game in games %}
                 <tr>
                     <td>{{ game.name }}</td>
-                    <td>{{ game.ip }}</td>
-                    <td>{% if game.location %}{{ game.location }}{% else %}?{% endif %}</td>
-                    <td>{{ game.status_text }}</td>
+                    <td>{{ game.ip }}<br><small>({% if game.location %}{{ game.location }}{% else %}Location unknown{% endif %})</small></td>
+                    <td>{{ game.status_text }}{% if game.status.value != 'WAITING' %}<br><small>{% if game.status.value == 'PLAYING' %}{{ game.started_at.humanize() }}{% elif game.status.value == 'FINISHED' %}{{ game.finished_at.humanize() }}{% endif %}</small>{% endif %}</td>
+                    <td>{{ game.created_at.humanize() }}<br><small>{{ game.created_at.format() }}</small></td>
                 </tr>
                 {% endfor %}
             </tbody>

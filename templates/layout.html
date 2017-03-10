@@ -9,7 +9,6 @@
 
     <title>{% block meta_title %}{% endblock %}{% if self.meta_title() | trim %} • {% endif %}Connect Four Games</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/knacss.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 
@@ -21,7 +20,7 @@
         <a href="{{ url_for('home') }}" class="biggest"><img src="{{ url_for('static', filename='images/logo.png') }}"> Connect Four Games</a>
     </header>
 
-    <div class="pas center">
+    <div class="pas center page">
         {% with flash_messages = get_flashed_messages(with_categories=true) %}
           {% if flash_messages %}
             {% for category, message in flash_messages %}
