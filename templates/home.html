@@ -4,7 +4,7 @@
     <p class="txtcenter">This page lists all the <a href="https://github.com/EpocDotFr/connectfour">Connect Four</a> online games.</p>
 
     {% if games %}
-        <table class="wauto center mbn">
+        <table class="wauto center mbn mts">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -16,7 +16,7 @@
             <tbody>
                 {% for game in games %}
                 <tr>
-                    <td>{{ game.name }}<br><small>v{{ game.version }}</small></td>
+                    <td>{{ game.name }} <small>(v{{ game.version }})</small></td>
                     <td>{{ game.ip }}<br><small>({% if game.country %}{{ game.country_name }}{% else %}Country unknown{% endif %})</small></td>
                     <td>{{ game.status_text }}{% if game.status.value != 'WAITING' %}<br><small>{% if game.status.value == 'PLAYING' %}{{ game.started_at.humanize() }}{% elif game.status.value == 'FINISHED' %}{{ game.finished_at.humanize() }}{% endif %}</small>{% endif %}</td>
                     <td>{{ game.created_at.humanize() }}<br><small>{{ game.created_at.format() }}</small></td>
