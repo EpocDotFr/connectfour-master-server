@@ -92,7 +92,7 @@ class GamesResource(Resource):
         geolite2_reader.close()
 
         if location:
-            game.country = location['country']['names']['en'] # FIXME
+            game.country = location['country']['iso_code']
 
         try:
             db.session.add(game)

@@ -4,4 +4,4 @@ A REST API who centralize all games from all the [Connect Four](https://github.c
 
 ## Credits
 
- - This project uses GeoLite2 data created by MaxMind, available from [www.maxmind.com](http://www.maxmind.com)
+ - This project uses GeoLite2 data created by MaxMind, available from [www.maxmind.com](https://www.maxmind.com/)
