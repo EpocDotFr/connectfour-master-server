@@ -48,14 +48,6 @@ for handler in app.logger.handlers:
 # Routes
 
 
-get_games_parser = reqparse.RequestParser()
-get_games_parser.add_argument('version', required=True, location='args')
-
-post_games_parser = reqparse.RequestParser()
-post_games_parser.add_argument('name', required=True, location='json')
-post_games_parser.add_argument('version', required=True, location='json')
-
-
 @app.route('/')
 def home():
     return render_template('home.html', games=Game.query.get_all_for_home())
@@ -64,6 +56,23 @@ def home():
 # -----------------------------------------------------------
 # API resources
 
+def game_status(value):
+    valid_statuses = [GameStatus.PLAYING.value, GameStatus.FINISHED.value]
+
+    if value not in valid_statuses:
+        raise ValueError('Invalid parameter. It can be one of: {}'.format(', '.join(valid_statuses)))
+
+    return value
+
+get_games_parser = reqparse.RequestParser()
+get_games_parser.add_argument('version', required=True, location='args')
+
+post_games_parser = reqparse.RequestParser()
+post_games_parser.add_argument('name', required=True, location='json')
+post_games_parser.add_argument('version', required=True, location='json')
+
+put_game_parser = post_games_parser.copy()
+put_game_parser.add_argument('status', required=True, location='json', type=game_status)
 
 game_fields = {
     'id': fields.String,
@@ -124,13 +133,20 @@ class GameResource(Resource):
     def put(self, id):
         game = self._get_game(id)
 
-        args = post_games_parser.parse_args()
+        args = put_game_parser.parse_args()
 
         if 'name' in args:
             game.name = args['name']
 
         if 'version' in args:
             game.version = args['version']
+
+        game.status = args['status']
+
+        if game.status == GameStatus.PLAYING.value:
+            game.started_at = arrow.now()
+        elif game.status == GameStatus.FINISHED.value:
+            game.finished_at = arrow.now()
 
         ip = request.headers.get('X-Forwarded-For', request.remote_addr)
 
