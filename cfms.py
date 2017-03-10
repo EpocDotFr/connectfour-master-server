@@ -46,7 +46,7 @@ for handler in app.logger.handlers:
 
 
 get_games_parser = reqparse.RequestParser()
-get_games_parser.add_argument('version', location='args')
+get_games_parser.add_argument('version', required=True, location='args')
 
 post_games_parser = reqparse.RequestParser()
 post_games_parser.add_argument('name', required=True, location='json')
@@ -55,7 +55,7 @@ post_games_parser.add_argument('version', required=True, location='json')
 
 @app.route('/')
 def home():
-    return render_template('home.html', games=Game.query.get_all())
+    return render_template('home.html', games=Game.query.get_all_for_home())
 
 
 # -----------------------------------------------------------
@@ -153,7 +153,7 @@ class Game(db.Model):
 
             return q.all()
 
-        def get_all(self):
+        def get_all_for_home(self):
             q = self.order_by(Game.name.asc())
 
             return q.all()
