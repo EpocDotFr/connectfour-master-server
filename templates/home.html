@@ -19,7 +19,7 @@
                     <td>{{ game.name }}<br><small class="txtmuted">v{{ game.version }}</small></td>
                     <td>{{ game.ip }}<br><small class="txtmuted">{% if game.country %}{{ game.country_name }}{% else %}Unknown location{% endif %}</small></td>
                     <td>
-                        <span class="{% if game.status.value in ('FINISHED', 'PLAYING') %}txtred{% elif game.status.value == 'WAITING' %}txtgreen{% endif %}">{{ game.status_text }}</span><br>
+                        <span>{{ game.status_text }}</span>{% if game.winner %} <small class="{% if game.winner.value == 'RED' %}txtred{% elif game.winner.value == 'YELLOW' %}txtyellow{% endif %}">{{ game.winner_text }} win</small>{% endif %}<br>
                         <small class="txtmuted">
                             {% if game.status.value != 'WAITING' %}
                                 {% if game.status.value == 'PLAYING' %}

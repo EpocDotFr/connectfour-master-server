@@ -56,11 +56,21 @@ def home():
 # -----------------------------------------------------------
 # API resources
 
-def game_status(value):
-    valid_statuses = [GameStatus.PLAYING.value, GameStatus.FINISHED.value]
 
-    if value not in valid_statuses:
-        raise ValueError('Invalid parameter. It can be one of: {}'.format(', '.join(valid_statuses)))
+def game_status(value):
+    valid_values = [GameStatus.PLAYING.value, GameStatus.FINISHED.value]
+
+    if value not in valid_values:
+        raise ValueError('Invalid parameter. It can be one of: {}'.format(', '.join(valid_values)))
+
+    return value
+
+
+def game_winner(value):
+    valid_values = [GameWinner.RED.value, GameWinner.YELLOW.value]
+
+    if value not in valid_values:
+        raise ValueError('Invalid parameter. It can be one of: {}'.format(', '.join(valid_values)))
 
     return value
 
@@ -73,13 +83,19 @@ post_games_parser.add_argument('version', required=True, location='json')
 
 put_game_parser = post_games_parser.copy()
 put_game_parser.add_argument('status', required=True, location='json', type=game_status)
+put_game_parser.add_argument('winner', location='json', type=game_winner)
 
 game_fields = {
     'id': fields.String,
     'name': fields.String,
     'ip': fields.String,
-    'country_name': fields.String,
-    'created_at': fields.String
+    'country': fields.String,
+    'version': fields.String,
+    'status': fields.String,
+    'created_at': fields.String,
+    'started_at': fields.String,
+    'finished_at': fields.String,
+    'winner': fields.String
 }
 
 
@@ -147,6 +163,7 @@ class GameResource(Resource):
             game.started_at = arrow.now()
         elif game.status == GameStatus.FINISHED.value:
             game.finished_at = arrow.now()
+            game.winner = args['winner']
 
         ip = request.headers.get('X-Forwarded-For', request.remote_addr)
 
@@ -194,6 +211,11 @@ class GameStatus(Enum):
     FINISHED = 'FINISHED'
 
 
+class GameWinner(Enum):
+    RED = 'RED'
+    YELLOW = 'YELLOW'
+
+
 class Game(db.Model):
     class GameQuery(db.Query):
         def get_all_for_api(self, version):
@@ -217,16 +239,18 @@ class Game(db.Model):
     country = db.Column(db.String(255), default=None)
     version = db.Column(db.String(10), nullable=False)
     status = db.Column(db.Enum(GameStatus), default=GameStatus.WAITING)
+    winner = db.Column(db.Enum(GameWinner), default=None)
     created_at = db.Column(ArrowType, default=arrow.now())
     started_at = db.Column(ArrowType, default=None)
     finished_at = db.Column(ArrowType, default=None)
 
-    def __init__(self, name=None, ip=None, country=None, version=None, status=GameStatus.WAITING, created_at=arrow.now(), started_at=None, finished_at=None):
+    def __init__(self, name=None, ip=None, country=None, version=None, status=GameStatus.WAITING, winner=None, created_at=arrow.now(), started_at=None, finished_at=None):
         self.name = name
         self.ip = ip
         self.country = country
         self.version = version
         self.status = status
+        self.winner = winner
         self.created_at = created_at
         self.started_at = started_at
         self.finished_at = finished_at
@@ -242,6 +266,13 @@ class Game(db.Model):
             return 'Playing'
         elif self.status == GameStatus.FINISHED:
             return 'Finished'
+
+    @property
+    def winner_text(self):
+        if self.winner == GameWinner.RED:
+            return 'Red'
+        if self.winner == GameWinner.YELLOW:
+            return 'Yellow'
 
     @property
     def country_name(self):
