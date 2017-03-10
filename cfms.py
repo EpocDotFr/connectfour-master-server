@@ -74,6 +74,12 @@ def game_winner(value):
 
     return value
 
+
+class EnumField(fields.Raw):
+    def format(self, enum):
+        return enum.value
+
+
 get_games_parser = reqparse.RequestParser()
 get_games_parser.add_argument('version', required=True, location='args')
 
@@ -91,11 +97,11 @@ game_fields = {
     'ip': fields.String,
     'country': fields.String,
     'version': fields.String,
-    'status': fields.String,
+    'status': EnumField(),
     'created_at': fields.String,
     'started_at': fields.String,
     'finished_at': fields.String,
-    'winner': fields.String
+    'winner': EnumField()
 }
 
 
