@@ -93,7 +93,6 @@ put_game_parser.add_argument('version', location='json')
 put_game_parser.add_argument('token', required=True, location='json')
 put_game_parser.add_argument('status', location='json', type=game_status)
 put_game_parser.add_argument('winner', location='json', type=game_winner)
-put_game_parser.add_argument('ping', location='json', type=bool)
 
 delete_game_parser = reqparse.RequestParser()
 delete_game_parser.add_argument('token', required=True, location='json')
@@ -192,8 +191,7 @@ class GameResource(Resource):
         if args['version']:
             game.version = args['version']
 
-        if args['ping']:
-            game.last_ping_at = arrow.now()
+        game.last_ping_at = arrow.now()
 
         ip = request.headers.get('X-Forwarded-For', request.remote_addr)
 
