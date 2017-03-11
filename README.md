@@ -8,7 +8,8 @@ over the world.
 ## Features
 
   - Web-based game browser interface with filtering capabilities
-  - REST API used by the Connect Four game itself to advertise hosts and kepping the online game's data up-to-date
+  - REST API used by the Connect Four game itself to advertise hosts and keep online game's data up-to-date
+  - There's only two features listed but trust me, they are big
 
 ## Prerequisites
 
