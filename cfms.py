@@ -103,7 +103,7 @@ public_game_fields = {
     'country': fields.String,
     'version': fields.String,
     'status': EnumField(),
-    'created_at': fields.DateTime,
+    'created_at': fields.String,
     'started_at': fields.String,
     'finished_at': fields.String,
     'winner': EnumField()
