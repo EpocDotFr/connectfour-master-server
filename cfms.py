@@ -92,6 +92,9 @@ put_game_parser.add_argument('token', required=True, location='json')
 put_game_parser.add_argument('status', required=True, location='json', type=game_status)
 put_game_parser.add_argument('winner', location='json', type=game_winner)
 
+delete_game_parser = reqparse.RequestParser()
+delete_game_parser.add_argument('token', required=True, location='json')
+
 public_game_fields = {
     'id': fields.Integer,
     'name': fields.String,
@@ -207,6 +210,11 @@ class GameResource(Resource):
 
     def delete(self, id):
         game = self._get_game(id)
+
+        args = delete_game_parser.parse_args()
+
+        if args['token'] != game.token:
+            abort_restful(403, message='You are not allowed to perform this operation.')
 
         try:
             db.session.delete(game)
