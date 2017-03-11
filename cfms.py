@@ -27,7 +27,7 @@ app.config['BUNDLE_ERRORS'] = True
 app.jinja_env.globals.update(arrow=arrow)
 
 db = SQLAlchemy(app)
-api = Api(app, catch_all_404s=True)
+api = Api(app, prefix='/api', catch_all_404s=True)
 Babel(app)
 
 # Default Python logger
