@@ -88,11 +88,12 @@ post_games_parser.add_argument('name', required=True, location='json')
 post_games_parser.add_argument('version', required=True, location='json')
 
 put_game_parser = post_games_parser.copy()
+put_game_parser.add_argument('token', required=True, location='json')
 put_game_parser.add_argument('status', required=True, location='json', type=game_status)
 put_game_parser.add_argument('winner', location='json', type=game_winner)
 
-game_fields = {
-    'id': fields.String,
+public_game_fields = {
+    'id': fields.Integer,
     'name': fields.String,
     'ip': fields.String,
     'country': fields.String,
@@ -104,20 +105,27 @@ game_fields = {
     'winner': EnumField()
 }
 
+private_game_fields = {
+    **public_game_fields,
+    **{
+        'token': fields.String
+    }
+}
+
 
 class GamesResource(Resource):
-    @marshal_with(game_fields)
+    @marshal_with(public_game_fields)
     def get(self):
         args = get_games_parser.parse_args()
 
         return Game.query.get_all_for_api(version=args['version'])
 
-    @marshal_with(game_fields)
+    @marshal_with(private_game_fields)
     def post(self):
         args = post_games_parser.parse_args()
 
         game = Game()
-        game.id = uuid.uuid4().hex
+        game.token = uuid.uuid4().hex
         game.name = args['name']
         game.ip = request.headers.get('X-Forwarded-For', request.remote_addr)
         game.version = args['version']
@@ -147,15 +155,21 @@ class GameResource(Resource):
 
         return game
 
-    @marshal_with(game_fields)
+    @marshal_with(public_game_fields)
     def get(self, id):
         return self._get_game(id)
 
-    @marshal_with(game_fields)
+    @marshal_with(public_game_fields)
     def put(self, id):
         game = self._get_game(id)
 
         args = put_game_parser.parse_args()
+
+        if args['token'] != game.token:
+            abort_restful(403, message='You are not allowed to perform this operation.')
+
+        if args['status'] == game.status:
+            abort_restful(400, message='This game already has the {} status.'.format(args['status']))
 
         if 'name' in args:
             game.name = args['name']
@@ -238,8 +252,9 @@ class Game(db.Model):
     __tablename__ = 'games'
     query_class = GameQuery
 
-    id = db.Column(db.String(32), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 
+    token = db.Column(db.String(32), nullable=False)
     name = db.Column(db.String(255), nullable=False)
     ip = db.Column(db.String(45), nullable=False, unique=True)
     country = db.Column(db.String(255), default=None)
