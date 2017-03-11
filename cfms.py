@@ -89,8 +89,9 @@ post_games_parser.add_argument('version', required=True, location='json')
 
 put_game_parser = post_games_parser.copy()
 put_game_parser.add_argument('token', required=True, location='json')
-put_game_parser.add_argument('status', required=True, location='json', type=game_status)
+put_game_parser.add_argument('status', location='json', type=game_status)
 put_game_parser.add_argument('winner', location='json', type=game_winner)
+put_game_parser.add_argument('ping', location='json')
 
 delete_game_parser = reqparse.RequestParser()
 delete_game_parser.add_argument('token', required=True, location='json')
@@ -102,7 +103,7 @@ public_game_fields = {
     'country': fields.String,
     'version': fields.String,
     'status': EnumField(),
-    'created_at': fields.String,
+    'created_at': fields.DateTime,
     'started_at': fields.String,
     'finished_at': fields.String,
     'winner': EnumField()
@@ -179,6 +180,9 @@ class GameResource(Resource):
 
         if 'version' in args:
             game.version = args['version']
+
+        if 'last_ping_at' in args:
+            game.last_ping_at = arrow.now()
 
         game.status = args['status']
 
@@ -269,17 +273,19 @@ class Game(db.Model):
     version = db.Column(db.String(10), nullable=False)
     status = db.Column(db.Enum(GameStatus), default=GameStatus.WAITING)
     winner = db.Column(db.Enum(GameWinner), default=None)
+    last_ping_at = db.Column(ArrowType, default=arrow.now())
     created_at = db.Column(ArrowType, default=arrow.now())
     started_at = db.Column(ArrowType, default=None)
     finished_at = db.Column(ArrowType, default=None)
 
-    def __init__(self, name=None, ip=None, country=None, version=None, status=GameStatus.WAITING, winner=None, created_at=arrow.now(), started_at=None, finished_at=None):
+    def __init__(self, name=None, ip=None, country=None, version=None, status=GameStatus.WAITING, winner=None, last_ping_at=arrow.now(), created_at=arrow.now(), started_at=None, finished_at=None):
         self.name = name
         self.ip = ip
         self.country = country
         self.version = version
         self.status = status
         self.winner = winner
+        self.last_ping_at = last_ping_at
         self.created_at = created_at
         self.started_at = started_at
         self.finished_at = finished_at
