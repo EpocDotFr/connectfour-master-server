@@ -87,11 +87,13 @@ post_games_parser = reqparse.RequestParser()
 post_games_parser.add_argument('name', required=True, location='json')
 post_games_parser.add_argument('version', required=True, location='json')
 
-put_game_parser = post_games_parser.copy()
+put_game_parser = reqparse.RequestParser()
+put_game_parser.add_argument('name', location='json')
+put_game_parser.add_argument('version', location='json')
 put_game_parser.add_argument('token', required=True, location='json')
 put_game_parser.add_argument('status', location='json', type=game_status)
 put_game_parser.add_argument('winner', location='json', type=game_winner)
-put_game_parser.add_argument('ping', location='json')
+put_game_parser.add_argument('ping', location='json', type=bool)
 
 delete_game_parser = reqparse.RequestParser()
 delete_game_parser.add_argument('token', required=True, location='json')
@@ -172,25 +174,26 @@ class GameResource(Resource):
         if args['token'] != game.token:
             abort_restful(403, message='You are not allowed to perform this operation.')
 
-        if args['status'] == game.status:
-            abort_restful(400, message='This game already has the {} status.'.format(args['status']))
+        if args['status']:
+            if args['status'] == game.status:
+                abort_restful(400, message='This game already has the {} status.'.format(args['status']))
 
-        if 'name' in args:
+            game.status = args['status']
+
+            if game.status == GameStatus.PLAYING.value:
+                game.started_at = arrow.now()
+            elif game.status == GameStatus.FINISHED.value:
+                game.finished_at = arrow.now()
+                game.winner = args['winner']
+
+        if args['name']:
             game.name = args['name']
 
-        if 'version' in args:
+        if args['version']:
             game.version = args['version']
 
-        if 'last_ping_at' in args:
+        if args['ping']:
             game.last_ping_at = arrow.now()
-
-        game.status = args['status']
-
-        if game.status == GameStatus.PLAYING.value:
-            game.started_at = arrow.now()
-        elif game.status == GameStatus.FINISHED.value:
-            game.finished_at = arrow.now()
-            game.winner = args['winner']
 
         ip = request.headers.get('X-Forwarded-For', request.remote_addr)
 
