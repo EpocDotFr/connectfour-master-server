@@ -182,6 +182,11 @@ Return a single game along a `200` or a `404` if the game wasn't found.
 Update a game's data and return it with its freshly updated attributes along a `200` or a `404` if the
 game wasn't found. If trying to update a game who have the `FINISHED` status, a `403` will be trown.
 
+The game's `last_ping_at` private attribute is updated each time this endpoint is called. This
+attribute is only used by the Cron task responsible to clean old and inactive games. Thus, it is
+possible to call this endpoint without any argument (except the required ones) only to update this
+attribute.
+
 ##### Parameters
 
   - JSON body
