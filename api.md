@@ -52,7 +52,7 @@ available ones).
 #### Success (`2xx`)
 
 The output can be different regarding the resource. It can be a HTTP response code `204` (no content).
-It can be a `200` or `201` with JSON output. Read the resource doc.
+It can be a `200` or `201` with JSON output. Read the resource's doc.
 
 #### Client error (`4xx`)
 
@@ -121,17 +121,17 @@ Here are all the object types that the API can return.
 }
 ```
 
-  - `country` The [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166) country code of the `ip` who created the game. Can be `null` if cannot be determined
-  - `created_at` [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) creation date of the game
-  - `finished_at` ISO 8601 finish date of the game. Can be `null`
-  - `id` Unique ID of the game
-  - `token` Unique token required to perform write operation on a game. **Only issued after successfully creating a game** (see below)
-  - `ip` IP of the games's creator (one IP cannot create more than one game)
-  - `name` The game's name used by the players to recognize it from the others (Connect Four actually put the [hostname](https://en.wikipedia.org/wiki/Hostname) in this parameter)
-  - `started_at` ISO 8601 starting date of the game. Can be `null`
-  - `status` Current status of the game. Can be one of `WAITING`, `PLAYING`, `FINISHED`. If `FINISHED`, `winner` is not `null`
-  - `version` A Connect Four version i.e `1.0`
-  - `winner` The player who won the game. `null` if `status` is different from `FINISHED`. Can be one of `RED`, `YELLOW` otherwise
+  - `country` (string) The [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166) country code of the `ip` who created the game. Can be `null` if cannot be determined
+  - `created_at` (string) [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) creation date of the game
+  - `finished_at` (string) ISO 8601 finish date of the game. Can be `null`
+  - `id` (integer) Unique ID of the game
+  - `token` (string) Unique token required to perform write operation on a game. **Only issued after successfully creating a game** (see below)
+  - `ip` (string) IP of the games's creator (one IP cannot create more than one game)
+  - `name` (string) The game's name used by the players to recognize it from the others (Connect Four actually put the [hostname](https://en.wikipedia.org/wiki/Hostname) in this parameter)
+  - `started_at` (string) ISO 8601 starting date of the game. Can be `null`
+  - `status` (string) Current status of the game. Can be one of `WAITING`, `PLAYING`, `FINISHED`. If `FINISHED`, `winner` is not `null`
+  - `version` (string) A Connect Four version i.e `1.0`
+  - `winner` (string) The player who won the game. `null` if `status` is different from `FINISHED`. Can be one of `RED`, `YELLOW` otherwise
 
 ## Resources
 
