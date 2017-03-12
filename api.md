@@ -145,7 +145,7 @@ Return a single game along a `200` or a `404` if the game wasn't found.
 
 #### `PUT`
 
-Update a game's data and return it with its newly updated attributes along a `200` or a `404` if the
+Update a game's data and return it with its freshly updated attributes along a `200` or a `404` if the
 game wasn't found.
 
 ##### Parameters
@@ -159,7 +159,7 @@ game wasn't found.
 
 #### `DELETE`
 
-Delete a game along a `204` or a `404` if the game wasn't found.
+Delete a game and return a `204` with no body or a `404` if the game wasn't found.
 
 ##### Parameters
 
