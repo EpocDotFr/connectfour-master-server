@@ -79,6 +79,14 @@ If a query string parameter is missing or invalid, it's the same output:
 }
 ```
 
+May also happen in other cases like the requested resource wasn't found:
+
+```json
+{
+    "message": "This thing does not exists."
+}
+```
+
 #### Server error (`5xx`)
 
 They should not happen.
@@ -102,7 +110,8 @@ Provide ways to manipulate games collection.
 
 #### `GET`
 
-Return a collection of waiting games matching a Connect Four version.
+Return a collection (array) of waiting games matching a Connect Four version along a `200`. An empty
+array is returned if no games are matching these criteria.
 
 ##### Parameters
 
@@ -111,10 +120,48 @@ Return a collection of waiting games matching a Connect Four version.
 
 #### `POST`
 
-Create a new game.
+Create a new game and return it along a `201`. A unique token is returned along the game's data if created
+successfully: this token will be required for any future critical operation on this game (`DELETE` and
+`PUT`). **This token will only be issued once**, so be sure to put it somewhere in a variable.
 
 ##### Parameters
 
   - JSON body
     - `name` (string) (**required**) - The game's name used by the players to recognize it from the others (Connect Four actually put the [hostname](https://en.wikipedia.org/wiki/Hostname) in this parameter)
     - `version` (string) (**required**) - A Connect Four version i.e `1.0`
+
+### `/games/{id}`
+
+Provide ways to manipulate a single game.
+
+##### Parameters
+
+  - Query string
+    - `{id}` (integer) (**required**) - A game ID
+
+#### `GET`
+
+Return a single game along a `200` or a `404` if the game wasn't found.
+
+#### `PUT`
+
+Update a game's data and return it with its newly updated attributes along a `200` or a `404` if the
+game wasn't found.
+
+##### Parameters
+
+  - JSON body
+    - `token` (string) (**required**) - The unique token required to perform critical operation on a game. If this token doesn't match the game's one, a `403` will be trown
+    - `name` (string) - The game's name used by the players to recognize it from the others (Connect Four actually put the [hostname](https://en.wikipedia.org/wiki/Hostname) in this parameter)
+    - `version` (string) - A Connect Four version i.e `1.0`
+    - `status` (string) (one of `PLAYING`, `FINISHED`) - The new game status. If provided and identical to the current games's one, a `400` will be trown. If `PLAYING`, the `started_at` game attribute will be updated. If `FINISHED`, the `finished_at` game attribute will be updated and the `winner` parameter becomes required
+    - `winner` (string) (one of `RED`, `YELLOW`) - The player who won the game. Required if the `status` parameter is provided and equals to `FINISHED`
+
+#### `DELETE`
+
+Delete a game along a `204` or a `404` if the game wasn't found.
+
+##### Parameters
+
+  - JSON body
+    - `token` (string) (**required**) - The unique token required to perform critical operation on a game. If this token doesn't match the game's one, a `403` will be trown
