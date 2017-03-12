@@ -99,6 +99,40 @@ Example:
 }
 ```
 
+## Objects
+
+Here are all the object types that the API can return.
+
+### Game
+
+```json
+{
+  "country": "FR",
+  "created_at": "2017-03-11T12:47:01.303415+00:00",
+  "finished_at": "2017-03-11T13:59:35.082576+00:00",
+  "id": 1,
+  "token": "b2467592ba4148e1bfa4374384c38cc7",
+  "ip": "6.6.6.6",
+  "name": "PC-Epoc",
+  "started_at": "2017-03-11T12:51:01.302415+00:00",
+  "status": "FINISHED",
+  "version": "1.0",
+  "winner": "RED"
+}
+```
+
+  - `country` The [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166) code of the `ip` who created the game. Can be `null` if cannot be determined
+  - `created_at` [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) creation date of the game
+  - `finished_at` ISO 8601 finish date of the game. Can be `null`
+  - `id` Unique ID of the game
+  - `token` Unique token required to perform write operation on a game. **Only issued after successfully creating a game** (see below)
+  - `ip` IP of the games's creator (one IP cannot create more than one game)
+  - `name` The game's name used by the players to recognize it from the others (Connect Four actually put the [hostname](https://en.wikipedia.org/wiki/Hostname) in this parameter)
+  - `started_at` ISO 8601 starting date of the game. Can be `null`
+  - `status` Current status of the game. Can be one of `WAITING`, `PLAYING`, `FINISHED`. If `FINISHED`, `winner` is not `null`
+  - `version` A Connect Four version i.e `1.0`
+  - `winner` The player who won the game. `null` if `status` is different from `FINISHED`. Can be one of `RED`, `YELLOW` otherwise
+
 ## Resources
 
 Here's the interesting part of this doc. For readability reasons, I'll not prepend resources URI with
