@@ -1,15 +1,19 @@
 # Connect Four Master Server
 
-A REST API to connect all the [Connect Four](https://github.com/EpocDotFr/connectfour) players from all
-over the world.
+A REST API to connect all the [Connect Four](https://github.com/EpocDotFr/connectfour) players together
+from all over the world.
 
 [TODO screenshot]
 
 ## Features
 
   - Web-based game browser interface with filtering capabilities
-  - REST API used by the Connect Four game itself to advertise hosts and keep online game's data up-to-date
-  - There's only two features listed but trust me, they are big
+    - Ability to view every single game ever played
+    - IP / name / version / status
+    - Which player has won if the game is finished
+    - When the game has been created, started and finished
+  - REST API used by the [Connect Four](https://github.com/EpocDotFr/connectfour) game itself to advertise hosts and keep online game's data up-to-date
+    - [More information](https://github.com/EpocDotFr/connectfour-master-server/blob/master/api.md)
 
 ## Prerequisites
 
@@ -55,6 +59,10 @@ The uWSGI file you'll have to set in your uWSGI configuration is `uwsgi.py`. The
 You'll probably have to hack with this application to make it work with one of the solutions described
 [here](http://flask.pocoo.org/docs/0.12/deploying/). Send me a pull request if you make it work.
 
+## API docs
+
+Please navigate [here](https://github.com/EpocDotFr/connectfour-master-server/blob/master/api.md) for the full docs.
+
 ## How it works
 
 This project is mainly powered by [Flask](http://flask.pocoo.org/) (Python) and [Flask-RESTful](https://flask-restful.readthedocs.io/)
@@ -63,11 +71,6 @@ using a small [SQLite](https://en.wikipedia.org/wiki/SQLite) database to persist
 games pool up-to-date.
 
 For more information, I suggest you do dive into the code starting with the `cfms.py` file.
-
-## Gotchas
-
-As stated above, there's only one very basic security measure in place to prevent anyone to update /
-delete any games. There isn't any oAuth or even HTTP authentication. So be aware.
 
 ## Credits
 
