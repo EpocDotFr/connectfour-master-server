@@ -89,7 +89,7 @@ May also happen in other cases like the requested resource wasn't found:
 
 #### Server error (`5xx`)
 
-They should not happen.
+They should not happen. If so, please report an issue [here](https://github.com/EpocDotFr/connectfour-master-server/issues).
 
 Example:
 
@@ -121,8 +121,8 @@ array is returned if no games are matching these criteria.
 #### `POST`
 
 Create a new game and return it along a `201`. A unique token is returned along the game's data if created
-successfully: this token will be required for any future critical operation on this game (`DELETE` and
-`PUT`). **This token will only be issued once**, so be sure to put it somewhere in a variable.
+successfully: this token will be required for any future write operation on this game. **This token
+will only be issued once**, so be sure to put it somewhere in a variable.
 
 ##### Parameters
 
@@ -151,7 +151,7 @@ game wasn't found.
 ##### Parameters
 
   - JSON body
-    - `token` (string) (**required**) - The unique token required to perform critical operation on a game. If this token doesn't match the game's one, a `403` will be trown
+    - `token` (string) (**required**) - The unique token required to perform write operation on a game. If this token doesn't match the game's one, a `403` will be trown
     - `name` (string) - The game's name used by the players to recognize it from the others (Connect Four actually put the [hostname](https://en.wikipedia.org/wiki/Hostname) in this parameter)
     - `version` (string) - A Connect Four version i.e `1.0`
     - `status` (string) (one of `PLAYING`, `FINISHED`) - The new game status. If provided and identical to the current games's one, a `400` will be trown. If `PLAYING`, the `started_at` game attribute will be updated. If `FINISHED`, the `finished_at` game attribute will be updated and the `winner` parameter becomes required
@@ -164,4 +164,4 @@ Delete a game along a `204` or a `404` if the game wasn't found.
 ##### Parameters
 
   - JSON body
-    - `token` (string) (**required**) - The unique token required to perform critical operation on a game. If this token doesn't match the game's one, a `403` will be trown
+    - `token` (string) (**required**) - The unique token required to perform write operation on a game. If this token doesn't match the game's one, a `403` will be trown
