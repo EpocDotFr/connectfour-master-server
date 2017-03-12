@@ -121,7 +121,7 @@ Here are all the object types that the API can return.
 }
 ```
 
-  - `country` The [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166) code of the `ip` who created the game. Can be `null` if cannot be determined
+  - `country` The [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166) country code of the `ip` who created the game. Can be `null` if cannot be determined
   - `created_at` [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) creation date of the game
   - `finished_at` ISO 8601 finish date of the game. Can be `null`
   - `id` Unique ID of the game
