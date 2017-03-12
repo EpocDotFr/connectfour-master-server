@@ -50,7 +50,12 @@ for handler in app.logger.handlers:
 
 @app.route('/')
 def home():
-    return render_template('home.html', games=Game.query.get_all_for_home())
+    if 'status' in request.args:
+        statuses = request.args.getlist('status')
+    else:
+        statuses = [GameStatus.WAITING.value]
+
+    return render_template('home.html', games=Game.query.get_all_for_home(statuses=[GameStatus(status) for status in statuses]), statuses=statuses)
 
 
 # -----------------------------------------------------------
@@ -58,21 +63,24 @@ def home():
 
 
 def game_status(value):
-    value = GameStatus(value)
     valid_values = [GameStatus.PLAYING, GameStatus.FINISHED]
 
-    if value not in valid_values:
+    try:
+        value = GameStatus(value)
+
+        if value not in valid_values:
+            raise ValueError()
+    except ValueError:
         raise ValueError('Invalid parameter. It can be one of: {}'.format(', '.join([e.value for e in valid_values])))
 
     return value
 
 
 def game_winner(value):
-    value = GameWinner(value)
-    valid_values = [GameWinner.RED, GameWinner.YELLOW]
-
-    if value not in valid_values:
-        raise ValueError('Invalid parameter. It can be one of: {}'.format(', '.join([e.value for e in valid_values])))
+    try:
+        value = GameWinner(value)
+    except ValueError:
+        raise ValueError('Invalid parameter. It can be one of: {}'.format(', '.join([e.value for e in GameWinner])))
 
     return value
 
@@ -260,13 +268,18 @@ class GameWinner(Enum):
 class Game(db.Model):
     class GameQuery(db.Query):
         def get_all_for_api(self, version):
-            q = self.order_by(Game.name.asc())
+            q = self.order_by(Game.last_ping_at.asc())
+            q = q.order_by(Game.name.asc())
             q = q.filter(Game.status == GameStatus.WAITING and Game.version == version)
 
             return q.all()
 
-        def get_all_for_home(self):
-            q = self.order_by(Game.name.asc())
+        def get_all_for_home(self, statuses=None):
+            q = self.order_by(Game.last_ping_at.asc())
+            q = q.order_by(Game.name.asc())
+
+            if statuses:
+                q = q.filter(Game.status.in_(statuses))
 
             return q.all()
 

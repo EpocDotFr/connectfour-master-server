@@ -105,5 +105,5 @@ table th {
 }
 
 table tr:nth-child(even) td {
-    background-color: #F5F6FF;
+    background-color: #f9f9f9;
 }

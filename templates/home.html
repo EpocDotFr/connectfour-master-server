@@ -3,12 +3,24 @@
 {% block content %}
     <p class="txtcenter">This page lists all the <a href="https://github.com/EpocDotFr/connectfour">Connect Four</a> online games.</p>
 
+    <form action="{{ url_for('home') }}" method="GET" class="mts">
+        <p class="txtcenter"><strong>Show:</strong> 
+            <label><input type="checkbox" name="status" value="WAITING" onChange="this.form.submit()" {% if 'WAITING' in statuses %}checked{% endif %}> Waiting</label>
+            <label><input type="checkbox" name="status" value="PLAYING" onChange="this.form.submit()" {% if 'PLAYING' in statuses %}checked{% endif %}> Playing</label>
+            <label><input type="checkbox" name="status" value="FINISHED" onChange="this.form.submit()" {% if 'FINISHED' in statuses %}checked{% endif %}> Finished</label>
+        </p>
+
+        <p class="txtcenter">Found {{ games|length }} game{% if games|length > 1 %}s{% endif %} matching you criteria.</p>
+    </form>
+
     {% if games %}
-        <table class="wauto center mbn mts">
+        <table class="mbn mts">
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Game version</th>
                     <th>IP</th>
+                    <th>Location</th>
                     <th>Status</th>
                     <th>Created</th>
                 </tr>
@@ -16,8 +28,10 @@
             <tbody>
                 {% for game in games %}
                 <tr>
-                    <td>{{ game.name }}<br><small class="txtmuted">v{{ game.version }}</small></td>
-                    <td>{{ game.ip }}<br><small class="txtmuted">{% if game.country %}{{ game.country_name }}{% else %}Unknown location{% endif %}</small></td>
+                    <td>{{ game.name }}</td>
+                    <td>v{{ game.version }}</td>
+                    <td>{{ game.ip }}</td>
+                    <td>{% if game.country %}{{ game.country_name }}{% else %}Unknown location{% endif %}</td>
                     <td>
                         <span>{{ game.status_text }}</span>{% if game.winner %} <small class="{% if game.winner.value == 'RED' %}txtred{% elif game.winner.value == 'YELLOW' %}txtyellow{% endif %}">{{ game.winner_text }} win</small>{% endif %}<br>
                         <small class="txtmuted">
