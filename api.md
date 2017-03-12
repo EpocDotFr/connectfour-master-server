@@ -10,7 +10,7 @@ interface will be available right under this domain. Thus, the API endpoint will
 
 ## Authentication
 
-*There isn't any authentication / authorization method in place.* There's only one very basic security
+**There isn't any authentication / authorization method in place.** There's only one very basic security
 measure to prevent anyone to update / delete any games. So be aware.
 
 Continue reading to read more.
@@ -19,9 +19,9 @@ Continue reading to read more.
 
 The HTTP response status code must be used to check if the sent request was successfully handled or not:
 
-  - 2xx: Everything is OK. The response body will contain whatever the resource provide (check its doc)
-  - 4xx: The client made a mistake in its request, typically it's an input parameters validation error
-  - 5xx: There were a server error
+  - `2xx` Everything is OK. The response body will contain whatever the resource provide (check its doc)
+  - `4xx` The client made a mistake in its request, typically it's an input parameters validation error
+  - `5xx` There were a server error
 
 Read below to know what kind of output (and input) you can get in those different cases.
 
@@ -56,7 +56,7 @@ It can be a `200` or `201` with JSON output. Read the resource doc.
 
 #### Client error (4xx)
 
-Typically an input parameters validation error.
+Typically an input parameters validation error:
 
 ```json
 {
@@ -69,7 +69,7 @@ Typically an input parameters validation error.
 
 In this case the `hey` and `blow` input parameters are missing.
 
-If a query string parameter is misisng or invalid, it's the same output:
+If a query string parameter is missing or invalid, it's the same output:
 
 ```json
 {
@@ -90,3 +90,6 @@ Example:
     "message": "Error creating this thing: (sqlite3.IntegrityError) UNIQUE constraint failed: thing.thingy"
 }
 ```
+
+## Resources
+
