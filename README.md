@@ -22,7 +22,10 @@ from all over the world.
 
 ## Installation
 
-Clone this repo somewhere and then the usual `pip install -r requirements.txt`.
+  1. Clone this repo somewhere
+  2. `pip install -r requirements.txt`
+  3. `export FLASK_APP=cfms.py` (Windows users: `set FLASK_APP=cfms.py`)
+  4. `flask create_database` (WARNING: don't re-run this command unless you want to start from scratch, it will wipe out all the data)
 
 ## Configuration
 
