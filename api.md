@@ -49,12 +49,12 @@ Some resource can however require parameters in the query string. Carefuly read 
 You can get 3 different types of output regarding the HTTP response status code (read above for the
 available ones).
 
-#### Success (2xx)
+#### Success (`2xx`)
 
 The output can be different regarding the resource. It can be a HTTP response code `204` (no content).
 It can be a `200` or `201` with JSON output. Read the resource doc.
 
-#### Client error (4xx)
+#### Client error (`4xx`)
 
 Typically an input parameters validation error:
 
@@ -79,7 +79,7 @@ If a query string parameter is missing or invalid, it's the same output:
 }
 ```
 
-#### Server error (5xx)
+#### Server error (`5xx`)
 
 They should not happen.
 
@@ -93,3 +93,28 @@ Example:
 
 ## Resources
 
+Here's the interesting part of this doc. For readability reasons, I'll not prepend resources URI with
+the API endpoint.
+
+### `/games`
+
+Provide ways to manipulate games collection.
+
+#### `GET`
+
+Return a collection of waiting games matching a Connect Four version.
+
+##### Parameters
+
+  - Query string
+    - `version` (string) (**required**) - A Connect Four version i.e `1.0`
+
+#### `POST`
+
+Create a new game.
+
+##### Parameters
+
+  - JSON body
+    - `name` (string) (**required**) - The game's name used by the players to recognize it from the others (Connect Four actually put the [hostname](https://en.wikipedia.org/wiki/Hostname) in this parameter)
+    - `version` (string) (**required**) - A Connect Four version i.e `1.0`
