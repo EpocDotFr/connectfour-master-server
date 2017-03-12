@@ -58,19 +58,21 @@ def home():
 
 
 def game_status(value):
-    valid_values = [GameStatus.PLAYING.value, GameStatus.FINISHED.value]
+    value = GameStatus(value)
+    valid_values = [GameStatus.PLAYING, GameStatus.FINISHED]
 
     if value not in valid_values:
-        raise ValueError('Invalid parameter. It can be one of: {}'.format(', '.join(valid_values)))
+        raise ValueError('Invalid parameter. It can be one of: {}'.format(', '.join([e.value for e in valid_values])))
 
     return value
 
 
 def game_winner(value):
-    valid_values = [GameWinner.RED.value, GameWinner.YELLOW.value]
+    value = GameWinner(value)
+    valid_values = [GameWinner.RED, GameWinner.YELLOW]
 
     if value not in valid_values:
-        raise ValueError('Invalid parameter. It can be one of: {}'.format(', '.join(valid_values)))
+        raise ValueError('Invalid parameter. It can be one of: {}'.format(', '.join([e.value for e in valid_values])))
 
     return value
 
@@ -168,6 +170,9 @@ class GameResource(Resource):
     def put(self, id):
         game = self._get_game(id)
 
+        if game.status == GameStatus.FINISHED:
+            abort_restful(403, message='This game can no longer be updated.')
+
         args = put_game_parser.parse_args()
 
         if args['token'] != game.token:
@@ -177,11 +182,11 @@ class GameResource(Resource):
             if args['status'] == game.status:
                 abort_restful(400, message='This game already has the {} status.'.format(args['status']))
 
-            game.status = args['status']
+            game.status = GameStatus(args['status'])
 
-            if game.status == GameStatus.PLAYING.value:
+            if game.status == GameStatus.PLAYING:
                 game.started_at = arrow.now()
-            elif game.status == GameStatus.FINISHED.value:
+            elif game.status == GameStatus.FINISHED:
                 game.finished_at = arrow.now()
                 game.winner = args['winner']
 
@@ -215,6 +220,9 @@ class GameResource(Resource):
 
     def delete(self, id):
         game = self._get_game(id)
+
+        if game.status == GameStatus.FINISHED:
+            abort_restful(403, message='This game can no longer be deleted.')
 
         args = delete_game_parser.parse_args()
 
