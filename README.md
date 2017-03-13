@@ -3,7 +3,9 @@
 A REST API to connect all the [Connect Four](https://github.com/EpocDotFr/connectfour) players together
 from all over the world.
 
-[TODO screenshot]
+<p align="center">
+  <img src="https://raw.githubusercontent.com/EpocDotFr/connectfour-master-server/master/screenshot.png">
+</p>
 
 ## Features
 
