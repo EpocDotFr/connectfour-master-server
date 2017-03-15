@@ -79,7 +79,8 @@ For more information, I suggest you do dive into the code starting with the `cfm
 
 ## Credits
 
-This project uses GeoLite2 data created by MaxMind, available from [www.maxmind.com](https://www.maxmind.com/).
+  - This project uses GeoLite2 data created by MaxMind, available from [www.maxmind.com](https://www.maxmind.com/)
+  - Some good parts of the [OpenRA Master Server](https://github.com/OpenRA/OpenRAMasterServer) inspired me
 
 ## End words
 

@@ -283,6 +283,12 @@ class Game(db.Model):
 
             return q.all()
 
+        def get_all_old(self, ttl):
+            q = self.filter(Game.last_ping_at <= arrow.now().replace(minutes=-ttl))
+            q = q.filter(Game.status != GameStatus.FINISHED)
+
+            return q.all()
+
     __tablename__ = 'games'
     query_class = GameQuery
 
@@ -353,6 +359,29 @@ def create_database():
     """Delete then create all the database tables."""
     db.drop_all()
     db.create_all()
+
+
+@app.cli.command()
+def clean():
+    """Delete all old games."""
+
+    ttl = app.config['GAMES_TTL']
+
+    app.logger.info('Getting all games olders than {} minutes'.format(ttl))
+
+    games = Game.query.get_all_old(ttl=ttl)
+
+    app.logger.info('Deleting {} games'.format(len(games)))
+
+    try:
+        for game in games:
+            db.session.delete(game)
+
+        db.session.commit()
+
+        app.logger.info('Done')
+    except Exception as e:
+        app.logger.error(e)
 
 
 # -----------------------------------------------------------
