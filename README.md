@@ -41,6 +41,8 @@ Available configuration parameters are:
 
 More informations on the three above can be found [here](http://flask.pocoo.org/docs/0.12/config/#builtin-configuration-values).
 
+  - `GAMES_TTL` Grace time (or time to live), in minutes, of the games who don't have the `FINISHED` status
+
 I'll let you search yourself about how to configure a web server along uWSGI.
 
 ## Usage
@@ -63,6 +65,10 @@ The uWSGI file you'll have to set in your uWSGI configuration is `uwsgi.py`. The
 
 You'll probably have to hack with this application to make it work with one of the solutions described
 [here](http://flask.pocoo.org/docs/0.12/deploying/). Send me a pull request if you make it work.
+
+A Flask command (`flask clean`) is used to clean the database. It removes old games with a status different from `FINISHED`
+which have their latest ping older than now minus 5 minutes (by default). It should be ran by a Cron or some task scheduler
+every 5 minutes, but this isn't mandatory.
 
 ## API docs
 
