@@ -133,6 +133,9 @@ Here are all the object types that the API can return.
   - `version` (string) - A Connect Four version i.e `1.0`
   - `winner` (string) - The player who won the game. `null` if `status` is different from `FINISHED`. Can be one of `RED`, `YELLOW` otherwise
 
+> A game may be deleted by the server automatically at any time if the game's latest ping is older than now minus 5 minutes
+> (by default) and if it has a status different from `FINISHED`.
+
 ## Resources
 
 Here's the interesting part of this doc. For readability reasons, I'll not prepend resources URI with
@@ -170,7 +173,7 @@ Provide ways to manipulate a single game.
 
 ##### Parameters
 
-  - Query string
+  - URI parameters
     - `{id}` (integer) (**required**) - A game ID
 
 #### `GET`
@@ -194,7 +197,7 @@ attribute.
     - `name` (string) - The game's name used by the players to recognize it from the others (Connect Four actually put the [hostname](https://en.wikipedia.org/wiki/Hostname) in this parameter)
     - `version` (string) - A Connect Four version i.e `1.0`
     - `status` (string) (one of `PLAYING`, `FINISHED`) - The new game status. If provided and identical to the current games's one, a `400` will be trown. If `PLAYING`, the `started_at` game attribute will be updated. If `FINISHED`, the `finished_at` game attribute will be updated and the `winner` parameter becomes required
-    - `winner` (string) (one of `RED`, `YELLOW`) - The player who won the game. Required if the `status` parameter is provided and equals to `FINISHED`
+    - `winner` (string) (one of `RED`, `YELLOW`) - The player who won the game. Required if the `status` parameter is provided and equal to `FINISHED`
 
 #### `DELETE`
 

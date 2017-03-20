@@ -68,7 +68,7 @@ You'll probably have to hack with this application to make it work with one of t
 
 A Flask command (`flask clean`) is used to clean the database. It removes old games with a status different from `FINISHED`
 which have their latest ping older than now minus 5 minutes (by default). It should be ran by a Cron or some task scheduler
-every 5 minutes, but this isn't mandatory.
+i.e every one minute, but this isn't mandatory.
 
 ## API docs
 
