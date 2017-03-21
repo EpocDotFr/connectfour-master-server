@@ -183,7 +183,7 @@ Return a single game along a `200` or a `404` if the game wasn't found.
 #### `PUT`
 
 Update a game's data and return it with its freshly updated attributes along a `200` or a `404` if the
-game wasn't found. If trying to update a game who have the `FINISHED` status, a `403` will be trown.
+game wasn't found. If trying to update a game who have the `FINISHED` status, a `403` will be thrown.
 
 The game's `last_ping_at` private attribute is updated each time this endpoint is called. This
 attribute is only used by the Cron task responsible to clean old and inactive games. Thus, it is
@@ -193,18 +193,18 @@ attribute.
 ##### Parameters
 
   - JSON body
-    - `token` (string) (**required**) - The unique token required to perform write operation on a game. If this token doesn't match the game's one, a `403` will be trown
+    - `token` (string) (**required**) - The unique token required to perform write operation on a game. If this token doesn't match the game's one, a `403` will be thrown
     - `name` (string) - The game's name used by the players to recognize it from the others (Connect Four actually put the [hostname](https://en.wikipedia.org/wiki/Hostname) in this parameter)
     - `version` (string) - A Connect Four version i.e `1.0`
-    - `status` (string) (one of `PLAYING`, `FINISHED`) - The new game status. If provided and identical to the current games's one, a `400` will be trown. If `PLAYING`, the `started_at` game attribute will be updated. If `FINISHED`, the `finished_at` game attribute will be updated and the `winner` parameter becomes required
+    - `status` (string) (one of `PLAYING`, `FINISHED`) - The new game status. If provided and identical to the current games's one, a `400` will be thrown. If `PLAYING`, the `started_at` game attribute will be updated. If `FINISHED`, the `finished_at` game attribute will be updated and the `winner` parameter becomes required
     - `winner` (string) (one of `RED`, `YELLOW`) - The player who won the game. Required if the `status` parameter is provided and equal to `FINISHED`
 
 #### `DELETE`
 
 Delete a game and return a `204` with no body or a `404` if the game wasn't found. If trying to delete
-a game who have the `FINISHED` status, a `403` will be trown.
+a game who have the `FINISHED` status, a `403` will be thrown.
 
 ##### Parameters
 
   - JSON body
-    - `token` (string) (**required**) - The unique token required to perform write operation on a game. If this token doesn't match the game's one, a `403` will be trown
+    - `token` (string) (**required**) - The unique token required to perform write operation on a game. If this token doesn't match the game's one, a `403` will be thrown
