@@ -20,15 +20,15 @@ Continue reading to read more.
 The HTTP response status code must be used to check if the sent request was successfully handled or not:
 
   - `2xx` Everything is OK. The response body will contain whatever the resource provide (check its doc)
-  - `4xx` The client made a mistake in its request, typically it's an input parameters validation error
+  - `4xx` The client made a mistake in its request, typically it's an input parameter validation error
   - `5xx` There were a server error
 
-Read below to know what kind of output (and input) you can get in those different cases.
+Read below to know what kind of output (and input) you can get (or provide) in those different cases.
 
 ## Input and output data format
 
-Everything is [JSON](https://en.wikipedia.org/wiki/JSON). You'll `PUT` or `POST` JSON data in the HTTP
-request body, and the API will give you JSON data in the HTTP response body.
+Everything is [JSON](https://en.wikipedia.org/wiki/JSON) along a `Content-Type` HTTP header of `application/json`. You'll
+`PUT` or `POST` JSON data in the HTTP request body, and the API will give you JSON data in the HTTP response body.
 
 ### Input
 
@@ -187,7 +187,7 @@ Return a single game along a `200` or a `404` if the game wasn't found.
 Update a game's data and return it with its freshly updated attributes along a `200` or a `404` if the
 game wasn't found. If trying to update a game who have the `FINISHED` status, a `403` will be thrown.
 
-The game's `last_ping_at` private attribute is updated each time this endpoint is called. This
+The game's `last_ping_at` hidden attribute is updated each time this endpoint is called. This
 attribute is only used by the Cron task responsible to clean old and inactive games. Thus, it is
 possible to call this endpoint without any argument (except the required ones) only to update this
 attribute.

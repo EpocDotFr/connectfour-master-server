@@ -10,7 +10,7 @@
             <label><input type="checkbox" name="status" value="FINISHED" onChange="this.form.submit()" {% if 'FINISHED' in statuses %}checked{% endif %}> Finished</label>
         </p>
 
-        <p class="txtcenter">Found {{ games|length }} game{% if games|length > 1 %}s{% endif %} matching you criteria.</p>
+        <p class="txtcenter">Found {{ games|length }} game{% if games|length > 1 %}s{% endif %} matching your criteria.</p>
     </form>
 
     {% if games %}
