@@ -154,9 +154,8 @@ class GamesResource(Resource):
         game.ip = request.headers.get('X-Forwarded-For', request.remote_addr)
         game.version = args['version']
 
-        geolite2_reader = geolite2.reader()
-        location = geolite2_reader.get(game.ip)
-        geolite2_reader.close()
+        with geolite2 as gl2:
+            location = gl2.reader().get(game.ip)
 
         if location:
             game.country = location['country']['iso_code']
@@ -220,9 +219,8 @@ class GameResource(Resource):
         if ip != game.ip:
             game.ip = ip
 
-            geolite2_reader = geolite2.reader()
-            location = geolite2_reader.get(game.ip)
-            geolite2_reader.close()
+            with geolite2 as gl2:
+                location = gl2.reader().get(game.ip)
 
             if location:
                 game.country = location['country']['iso_code']
