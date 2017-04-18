@@ -5,8 +5,8 @@ from flask_restful import Api, Resource, abort as abort_restful, marshal_with, f
 from werkzeug.exceptions import HTTPException
 from enum import Enum
 from geolite2 import geolite2
-from iso3166 import countries
 from flask_babel import Babel
+import iso3166
 import uuid
 import logging
 import sys
@@ -85,6 +85,13 @@ def game_winner(value):
     return value
 
 
+def country(value):
+    if value not in iso3166.countries_by_alpha2:
+        raise ValueError('Invalid parameter. It must be a valid ISO 3166-1 alpha-2 country code.')
+
+    return value
+
+
 class EnumField(fields.Raw):
     def format(self, enum):
         return enum.value
@@ -92,6 +99,8 @@ class EnumField(fields.Raw):
 
 get_games_parser = reqparse.RequestParser()
 get_games_parser.add_argument('version', required=True, location='args')
+get_games_parser.add_argument('country', location='args', type=country)
+get_games_parser.add_argument('name', location='args')
 
 post_games_parser = reqparse.RequestParser()
 post_games_parser.add_argument('name', required=True, location='json')
@@ -133,7 +142,7 @@ class GamesResource(Resource):
     def get(self):
         args = get_games_parser.parse_args()
 
-        return Game.query.get_all_for_api(version=args['version'])
+        return Game.query.get_all_for_api(version=args['version'], country=args['country'], name=args['name'])
 
     @marshal_with(private_game_fields)
     def post(self):
@@ -267,19 +276,31 @@ class GameWinner(Enum):
 
 class Game(db.Model):
     class GameQuery(db.Query):
-        def get_all_for_api(self, version):
+        def get_all_for_api(self, version, country=None, name=None):
             q = self.order_by(Game.last_ping_at.asc())
             q = q.order_by(Game.name.asc())
             q = q.filter(Game.status == GameStatus.WAITING and Game.version == version)
 
+            if country:
+                q = q.filter(Game.country == country)
+
+            if name:
+                q = q.filter(Game.name.like('%' + name + '%'))
+
             return q.all()
 
-        def get_all_for_home(self, statuses=None):
+        def get_all_for_home(self, statuses=None, country=None, name=None):
             q = self.order_by(Game.last_ping_at.asc())
             q = q.order_by(Game.name.asc())
 
             if statuses:
                 q = q.filter(Game.status.in_(statuses))
+
+            if country:
+                q = q.filter(Game.country == country)
+
+            if name:
+                q = q.filter(Game.name.like('%' + name + '%'))
 
             return q.all()
 
@@ -342,7 +363,7 @@ class Game(db.Model):
         if not self.country:
             return None
 
-        country = countries.get(self.country)
+        country = iso3166.countries.get(self.country)
 
         if country:
             return country.name

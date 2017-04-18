@@ -121,7 +121,7 @@ Here are all the object types that the API can return.
 }
 ```
 
-  - `country` (string) - The [ISO 3166](https://en.wikipedia.org/wiki/ISO_3166) country code of the `ip` who created the game. Can be `null` if cannot be determined
+  - `country` (string) - The [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code of the `ip` who created the game. Can be `null` if cannot be determined
   - `created_at` (string) - [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) creation date of the game
   - `finished_at` (string) - [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) finish date of the game. Can be `null`
   - `id` (integer) - Unique ID of the game
@@ -154,6 +154,8 @@ array is returned if no games are matching these criteria.
 
   - Query string
     - `version` (string) (**required**) - A Connect Four version i.e `1.0`
+    - `country` (string) - A country code, as defined in the [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) standard
+    - `name` (string) - A full or partial game name
 
 #### `POST`
 
