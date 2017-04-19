@@ -4,10 +4,17 @@
     <p class="txtcenter">This page lists all the <a href="https://github.com/EpocDotFr/connectfour">Connect Four</a> online games.</p>
 
     <form action="{{ url_for('home') }}" method="GET" class="mts">
-        <p class="txtcenter"><strong>Show:</strong> 
+        <p class="txtcenter"><strong>Filters:</strong> 
             <label><input type="checkbox" name="status" value="WAITING" onChange="this.form.submit()" {% if 'WAITING' in statuses %}checked{% endif %}> Waiting</label>
             <label><input type="checkbox" name="status" value="PLAYING" onChange="this.form.submit()" {% if 'PLAYING' in statuses %}checked{% endif %}> Playing</label>
             <label><input type="checkbox" name="status" value="FINISHED" onChange="this.form.submit()" {% if 'FINISHED' in statuses %}checked{% endif %}> Finished</label>
+            <input type="text" name="name" value="{{ request.args.name }}" placeholder="Full or partial game name" minlength="3">
+            <select name="country" onChange="this.form.submit()">
+                <option value="">All locations</option>
+                {% for country in iso3166.countries %}
+                    <option value="{{ country.alpha2 }}" {% if request.args.country == country.alpha2 %}checked{% endif %}>{{ country.name }}</option>
+                {% endfor %}
+            </select>
         </p>
 
         <p class="txtcenter">Found {{ games|length }} game{% if games|length > 1 %}s{% endif %} matching your criteria.</p>

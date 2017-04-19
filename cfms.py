@@ -24,7 +24,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///storage/data/db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['BUNDLE_ERRORS'] = True
 
-app.jinja_env.globals.update(arrow=arrow)
+app.jinja_env.globals.update(arrow=arrow, iso3166=iso3166)
 
 db = SQLAlchemy(app)
 api = Api(app, prefix='/api', catch_all_404s=True)
@@ -55,7 +55,14 @@ def home():
     else:
         statuses = [GameStatus.WAITING.value]
 
-    return render_template('home.html', games=Game.query.get_all_for_home(statuses=[GameStatus(status) for status in statuses]), statuses=statuses)
+    name = request.args.get('name')
+    country = request.args.get('country')
+
+    return render_template(
+        'home.html',
+        games=Game.query.get_all_for_home(statuses=[GameStatus(status) for status in statuses], name=name, country=country),
+        statuses=statuses
+    )
 
 
 # -----------------------------------------------------------
