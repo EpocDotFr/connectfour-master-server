@@ -5,7 +5,6 @@ from flask_restful import Api, Resource, abort as abort_restful, marshal_with, f
 from werkzeug.exceptions import HTTPException
 from enum import Enum
 from geolite2 import geolite2
-from flask_babel import Babel
 import iso3166
 import uuid
 import logging
@@ -28,7 +27,6 @@ app.jinja_env.globals.update(arrow=arrow, iso3166=iso3166)
 
 db = SQLAlchemy(app)
 api = Api(app, prefix='/api', catch_all_404s=True)
-Babel(app)
 
 # Default Python logger
 logging.basicConfig(

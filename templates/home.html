@@ -44,14 +44,14 @@
                         <small class="txtmuted">
                             {% if game.status.value != 'WAITING' %}
                                 {% if game.status.value == 'PLAYING' %}
-                                    {{ game.started_at.datetime|datetimeformat('short') }} ({{ game.started_at.humanize() }})
+                                    {{ game.started_at.format('M/D/YY hh:mm A') }} ({{ game.started_at.humanize() }})
                                 {% elif game.status.value == 'FINISHED' %}
-                                    {{ game.finished_at.datetime|datetimeformat('short') }} ({{ game.finished_at.humanize() }})
+                                    {{ game.finished_at.format('M/D/YY hh:mm A') }} ({{ game.finished_at.humanize() }})
                                 {% endif %}
                             {% endif %}
                         </small>
                     </td>
-                    <td>{{ game.created_at.datetime|datetimeformat('short') }}<br><small class="txtmuted">{{ game.created_at.humanize().capitalize() }}</small></td>
+                    <td>{{ game.created_at.format('M/D/YY hh:mm A') }}<br><small class="txtmuted">{{ game.created_at.humanize().capitalize() }}</small></td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -6,4 +6,3 @@ SQLAlchemy
 sqlalchemy-utils
 maxminddb-geolite2
 iso3166
-Flask-Babel
