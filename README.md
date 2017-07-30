@@ -1,7 +1,7 @@
 # Connect Four Master Server
 
 A REST API to connect all the [Connect Four](https://github.com/EpocDotFr/connectfour) players together
-from all over the world.
+from all over the world. Available at [cfms.epoc.fr](https://cfms.epoc.fr).
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/EpocDotFr/connectfour-master-server/master/screenshot.png">
@@ -77,7 +77,7 @@ Please navigate [here](https://github.com/EpocDotFr/connectfour-master-server/bl
 ## How it works
 
 This project is mainly powered by [Flask](http://flask.pocoo.org/) (Python) and [Flask-RESTful](https://flask-restful.readthedocs.io/)
-using a small [SQLite](https://en.wikipedia.org/wiki/SQLite) database to persist data. 
+using a small [SQLite](https://en.wikipedia.org/wiki/SQLite) database to persist data.
 [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) requests are used to maintain the
 games pool up-to-date.
 
