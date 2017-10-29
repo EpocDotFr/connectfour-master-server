@@ -1,7 +1,7 @@
 # Connect Four Master Server
 
 A REST API to connect all the [Connect Four](https://github.com/EpocDotFr/connectfour) players together
-from all over the world. Available at [cfms.epoc.fr](https://cfms.epoc.fr).
+from all over the world.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/EpocDotFr/connectfour-master-server/master/screenshot.png">
