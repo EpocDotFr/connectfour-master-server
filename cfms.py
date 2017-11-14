@@ -330,18 +330,6 @@ class Game(db.Model):
     started_at = db.Column(ArrowType, default=None)
     finished_at = db.Column(ArrowType, default=None)
 
-    def __init__(self, name=None, ip=None, country=None, version=None, status=GameStatus.WAITING, winner=None, last_ping_at=arrow.now(), created_at=arrow.now(), started_at=None, finished_at=None):
-        self.name = name
-        self.ip = ip
-        self.country = country
-        self.version = version
-        self.status = status
-        self.winner = winner
-        self.last_ping_at = last_ping_at
-        self.created_at = created_at
-        self.started_at = started_at
-        self.finished_at = finished_at
-
     def __repr__(self):
         return '<Game> #{} : {}'.format(self.id, self.name)
 
