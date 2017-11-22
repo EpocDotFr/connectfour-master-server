@@ -1,4 +1,3 @@
 SECRET_KEY = 'secretkeyhere'
 DEBUG = False
-LOGGER_HANDLER_POLICY = 'production'
 GAMES_TTL = 5
