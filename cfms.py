@@ -23,7 +23,7 @@ app.config['BUNDLE_ERRORS'] = True
 db = SQLAlchemy(app)
 api = Api(app, prefix='/api', catch_all_404s=True)
 
-handler = RotatingFileHandler('storage/logs/errors.log', maxBytes=25000, backupCount=2)
+handler = RotatingFileHandler('storage/logs/errors.log', maxBytes=10000000, backupCount=2)
 handler.setLevel(logging.WARNING)
 formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d/%m/%Y %H:%M:%S')
 handler.setFormatter(formatter)
