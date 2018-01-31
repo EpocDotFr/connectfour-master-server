@@ -1,8 +1,7 @@
-from flask import Flask, make_response, render_template
 from logging.handlers import RotatingFileHandler
-from werkzeug.exceptions import HTTPException
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
+from flask import Flask
 import iso3166
 import logging
 import arrow
@@ -38,26 +37,4 @@ app.jinja_env.globals.update(arrow=arrow, iso3166=iso3166)
 import routes
 import models
 import commands
-
-
-# -----------------------------------------------------------
-# HTTP errors handler
-
-
-@app.errorhandler(401)
-@app.errorhandler(403)
-@app.errorhandler(404)
-@app.errorhandler(500)
-@app.errorhandler(503)
-def http_error_handler(error, without_code=False):
-    if isinstance(error, HTTPException):
-        error = error.code
-    elif not isinstance(error, int):
-        error = 500
-
-    body = render_template('errors/{}.html'.format(error))
-
-    if not without_code:
-        return make_response(body, error)
-    else:
-        return make_response(body)
+import hooks
