@@ -15,7 +15,7 @@ from all over the world.
     - Which player has won if the game is finished
     - When the game has been created, started and finished
   - REST API used by the [Connect Four](https://github.com/EpocDotFr/connectfour) game itself to advertise hosts and keep online game's data up-to-date
-    - [More information](https://github.com/EpocDotFr/connectfour-master-server/blob/master/api.md)
+    - [Documentation](https://cfms.docs.apiary.io)
 
 ## Prerequisites
 
@@ -71,7 +71,7 @@ i.e every one minute, but this isn't mandatory.
 
 ## API docs
 
-Please navigate [here](https://github.com/EpocDotFr/connectfour-master-server/blob/master/api.md) for the full docs.
+Please navigate [here](https://cfms.docs.apiary.io) for the full docs.
 
 ## How it works
 
