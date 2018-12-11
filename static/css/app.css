@@ -77,6 +77,11 @@ textarea,
     padding-bottom: 0.5rem;
 }
 
+select {
+    -webkit-appearance: menulist;
+    -moz-appearance: menulist;
+}
+
 /************************************************************************
  * Header */
 
